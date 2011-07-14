@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backbone.js Demo</title>
+	<link rel="stylesheet" href="css/demo.css" type="text/css" />  
+</head>
+<body>
+	<div id="create-search">
+		<input id="search-query" type="text" />
+		<button id="submit-search">Add Search</button>
+	</div> 
+	<div id="monitor">
+		<div id="saved-search-list"></div>	
+		<div id="search-results"></div>
+	</div>
+	
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.5/backbone-min.js"></script>
+    <script src="http://ajax.cdnjs.com/ajax/libs/mustache.js/0.3.0/mustache.min.js"></script>
+    <!-- Pack and minify the following scripts for production -->
+    <script src="js/model/savedsearch.js"></script>
+    <script src="js/model/tweet.js"></script>
+    <script src="js/view/addsavedsearch.js"></script>
+    <script src="js/view/savedsearch.js"></script>
+    <script src="js/view/savedsearchlist.js"></script>
+    <script src="js/view/tweetlistview.js"></script>
+    <script src="js/view/tweetview.js"></script>
+    
+    <script type="text/javascript">
+	(function ($) {
+		// Create our models
+		var search = new SavedSearch();
+		
+		// Add views
+		var addSearchView = new AddSearchView({
+			el: $("#create-search"),
+			model: search
+		});
+		
+//		var savedSearchList = new SavedSearchListView({
+//			el: $("#saved-search-list"), 
+//			collection: searches
+//		});
+		
+		var tweetList = new TweetListView({
+			el: $("#search-results"),
+			collection: search.tweets
+		});
+		
+// 		savedSearchList.render();
+		tweetList.render();
+	})(jQuery);
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+#monitor {
+	padding: 10px;
+	border: solid 1px #C0C0C0;
+	clear: both;
+	width: 1000px;
+	margin-top: 10px;
+	position: absolute;
+}
+#saved-search-list {
+	width: 200px;
+	border: solid 1px #C0C0C0;
+	float: left;
+}
+#saved-search-list li {
+	list-style: none
+}
+#search-results {
+	width: 780px;
+	border: solid 1px #C0C0C0;
+	margin-left: 210px;
+}
