@@ -1,7 +1,8 @@
 var TweetListView = Backbone.View.extend({
 	initialize: function() {
-		_.bindAll(this, 'render', 'addTweet');
+		_.bindAll(this, 'render', 'addTweet', 'clear');
 		this.collection.bind('add', this.addTweet);
+		this.collection.bind('reset', this.clear);
 	},
 	render: function() {
 		var template = '\
@@ -12,9 +13,10 @@ var TweetListView = Backbone.View.extend({
 			this.tweetList = this.$('#tweet-list');			
 	},
 	addTweet: function(tweet) {
-		console.log('resultsChange handler on TweetListView');
-		console.log(tweet);
  		var view = new TweetView({ model: tweet  });	
  		this.tweetList.append(view.render().el);
-	}	
+	},
+	clear: function() {
+		$('#tweet-list').empty();
+	}
 });

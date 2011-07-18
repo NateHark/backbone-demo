@@ -1,6 +1,7 @@
 // A generic saved search
 var SavedSearch = Backbone.Model.extend({
-	newItemCheckInterval: 10000,
+	newItemCheckInterval: 30000,
+	queryPageSize: 25,
 	initialize: function(attributes) {
 		_.bindAll(this, 'clear', 'searchTwitter', 'revealLatestTweets');
 		this.bind('change:query', this.queryChanged);
@@ -19,7 +20,7 @@ var SavedSearch = Backbone.Model.extend({
 	searchTwitter: function() {
 		var me = this;
 		$.getJSON("http://search.twitter.com/search.json?callback=?",
-			{ rpp:25, q: me.get('query') }, 
+			{ rpp:me.queryPageSize, q: me.get('query') }, 
 			function(response){ me.fetchNewItemCountCallback(response); },
 			'jsonp');
 	}, 
@@ -34,6 +35,7 @@ var SavedSearch = Backbone.Model.extend({
 		me.hiddenTweets.reset();
 		$.each(response.results, function(i, val) {
 		    me.hiddenTweets.add(new Tweet({
+		    	  'id': val.id,
 		          'createdAt': val.created_at,
 		          'profileImageUrl': val.profile_image_url,
 		          'user': val.from_user,
@@ -46,10 +48,8 @@ var SavedSearch = Backbone.Model.extend({
 			}
 		});
 		
-		console.log(newItems + " new items");
-		
 		if(newItems == 0) {
-	       me.revealLatestTweets(); 
+	       	me.revealLatestTweets(); 
         }
 		
 		this.set({
@@ -57,14 +57,18 @@ var SavedSearch = Backbone.Model.extend({
 		});
 	},
 	revealLatestTweets: function() {
-	   this.tweets.reset();
-	   var me = this;
-	   $.each(this.hiddenTweets.models, function(i, val) {
-	       me.tweets.add(val);
-	   });   
+		this.tweets.reset();
+	   	var me = this,
+	   		maxId = 0;
+	   	$.each(this.hiddenTweets.models, function(i, val) {
+	   		if(val.get('id') > maxId) {
+	   			maxId = val.get('id');
+	   		}
+	    	me.tweets.add(val);
+	   	});   
+	   	me.set({ 'lastRead': maxId });
 	},
 	clear: function() {
-		this.view.remove();
 		clearInterval(this.fetchTimer);
 	}
 });
