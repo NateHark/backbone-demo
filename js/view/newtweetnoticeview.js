@@ -1,3 +1,6 @@
+/**
+ * A notification of new tweets matching the current search.
+ */
 var NewTweetNoticeView = Backbone.View.extend({
 	initialize: function() {
 		_.bindAll(this, 'render', 'newItemCountChanged', 'refreshTweets', 'clear');

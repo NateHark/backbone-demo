@@ -1,5 +1,8 @@
-// A generic saved search
-var SavedSearch = Backbone.Model.extend({
+/**
+ * Represents a Twitter search query. The model is a composite and includes the results
+ * of the search in the nested "tweets" model.
+ */
+var TwitterSearch = Backbone.Model.extend({
 	newItemCheckInterval: 30000,
 	queryPageSize: 25,
 	initialize: function(attributes) {

@@ -23,11 +23,9 @@
     <script src="js/ext/underscore.js"></script>
     <script src="js/ext/backbone.js"></script>
     <script src="js/ext/mustache.js"></script>
-    <script src="js/model/savedsearch.js"></script>
+    <script src="js/model/twittersearch.js"></script>
     <script src="js/model/tweet.js"></script>
-    <script src="js/view/addsavedsearch.js"></script>
-    <script src="js/view/savedsearch.js"></script>
-    <script src="js/view/savedsearchlist.js"></script>
+    <script src="js/view/createsearchview.js"></script>
     <script src="js/view/tweetlistview.js"></script>
     <script src="js/view/tweetview.js"></script>
     <script src="js/view/newtweetnoticeview.js"></script>
@@ -35,22 +33,22 @@
     <script type="text/javascript">
 	(function ($) {
 		// Create our models
-		var search = new SavedSearch();
+		var query = new TwitterSearch();
 		
 		// Add views
-		var addSearchView = new AddSearchView({
+		var createSearchView = new CreateSearchView({
 			el: $("#create-search"),
-			model: search
+			model: query
 		});
 		
 		var tweetList = new TweetListView({
 			el: $("#search-results"),
-			collection: search.tweets
+			collection: query.tweets
 		});
 		
 		var newTweetNoticeView = new NewTweetNoticeView({
 			el: $("#new-tweets"),
-			model: search
+			model: query
 		});
 		
 		tweetList.render();
