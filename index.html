@@ -11,6 +11,7 @@
 			<div id="create-search">
 				<input id="search-query" type="text" />
 				<button id="submit-search">Search</button>
+				<img class="loading-icon" src="img/spinner.gif" alt="loading" />
 			</div> 
 			<div id="monitor">
 				<div id="new-tweets"></div>	
@@ -43,7 +44,7 @@
 		
 		var tweetList = new TweetListView({
 			el: $("#search-results"),
-			collection: query.tweets
+			collection: query.displayedTweets
 		});
 		
 		var newTweetNoticeView = new NewTweetNoticeView({

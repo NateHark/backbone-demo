@@ -1,9 +1,11 @@
 /**
- * A notification of new tweets matching the current search.
+ * A view that provides notification of new tweets matching the current search, and 
+ * provides the user with a link they can click to view the latest results.
  */
 var NewTweetNoticeView = Backbone.View.extend({
 	initialize: function() {
 		_.bindAll(this, 'render', 'newItemCountChanged', 'refreshTweets', 'clear');
+		
 		this.model.bind('change:newItemCount', this.newItemCountChanged);
 		this.model.bind('change:query', this.clear);
 		this.model.bind('clear', this.clear);
@@ -13,14 +15,14 @@ var NewTweetNoticeView = Backbone.View.extend({
 	},
 	render: function() {
 		var newItems = this.model.get('newItemCount');
-		if(newItems > this.model.queryPageSize) {
-			newItems = newItems + '+';
+		if(newItems > this.model.queryPageSize - 1) {
+			newItems = (this.model.queryPageSize - 1) + '+';
 		}
 		
 		var template = '\
 			<div class="new-tweet-notice"> ' +
-				newItems + ' new results for term <b>{{query}}</b>. \
-				<a id="refresh-tweets" href="#">Click here</a> to see them. \
+				newItems + ' new Tweet(s) for term <b>&quot;{{query}}&quot;</b>. \
+				<a id="refresh-tweets" href="#">Click here</a> to view. \
 			</div> \
 			';
 

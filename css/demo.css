@@ -193,5 +193,10 @@ body {
 	color: #CCC;
 }
 
+.loading-icon {
+	margin-right: 100px;
+	display: none;
+}
+
 
 

@@ -1,0 +1,7 @@
+h2. A simple Twitter Search clone written with Backbone.js
+
+The sample application was used as a demo of Backbone.js presented to my work colleagues.
+
+h3. Usage
+
+The example application runs completely in the browser. Simply clone the repository and open index.html in your favorite browser. The app has been tested in the latest versions of Chrome and Firefox.

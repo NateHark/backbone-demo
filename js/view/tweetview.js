@@ -1,3 +1,6 @@
+/**
+ * A view that represents a single Tweet
+ */
 var TweetView = Backbone.View.extend({
 	tagName: 'li',
 	initialize: function() {

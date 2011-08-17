@@ -1,55 +1,49 @@
 /**
- * Represents a Twitter search query. The model is a composite and includes the results
- * of the search in the nested "tweets" model.
+ * Represents a Twitter search query. This model contains a reference to two instances of 
+ * TweetCollection. The first instance, "latestTweets", represents a cache of the most recent
+ * results returned by a search. The second instance, "displayedTweets", represents the set
+ * of Tweets visible on the page. After a query has been initially executed, new results are 
+ * fetched into the "latestTweets" collection on an interval. The number of new Tweets is calculated
+ * by comparing the number of Tweets in the "latestTweets" collection with and ID greater than
+ * the maximum ID in the "displayedTweets" collection. When the user elects to view the new Tweets
+ * the contents of the "latestTweets" collection are cloned into the "displayedTweets" collection.
  */
 var TwitterSearch = Backbone.Model.extend({
 	newItemCheckInterval: 30000,
-	queryPageSize: 25,
+	queryPageSize: 26,
 	initialize: function(attributes) {
-		_.bindAll(this, 'clear', 'searchTwitter', 'revealLatestTweets');
+		_.bindAll(this, 'clear', 'executeTwitterSearch', 'revealLatestTweets', 'fetchNewItemCountCallback');
 		this.bind('change:query', this.queryChanged);
 		
-		// Set model for containing search results
-		this.tweets = new TweetList();
-		this.hiddenTweets = new TweetList();
+		this.displayedTweets = new TweetCollection();
+		this.displayedTweets.queryPageSize = this.queryPageSize;
+		
+		this.latestTweets = new TweetCollection();
+		this.latestTweets.queryPageSize = this.queryPageSize;
+		this.latestTweets.bind('change', this.fetchNewItemCountCallback);
 	},
 	queryChanged: function() {
 		// Do initial fetch
-		this.searchTwitter();
+		this.executeTwitterSearch();
 				
 		// Set refresh
-		this.fetchTimer = setInterval(this.searchTwitter, this.newItemCheckInterval);
+		this.fetchTimer = setInterval(this.executeTwitterSearch, this.newItemCheckInterval);
 	},
-	searchTwitter: function() {
-		var me = this;
-		$.getJSON("http://search.twitter.com/search.json?callback=?",
-			{ rpp:me.queryPageSize, q: me.get('query') }, 
-			function(response){ me.fetchNewItemCountCallback(response); },
-			'jsonp');
+	executeTwitterSearch: function() {
+		this.latestTweets.query = this.get('query');
+		this.latestTweets.fetch();
 	}, 
 	fetchNewItemCountCallback: function(response) {
-		if(!this.get('lastRead')) {
-			this.set({ 'lastRead': response.max_id });
-		}
-		
 		var newItems = 0,
 			me = this;
-			
-		me.hiddenTweets.reset();
-		$.each(response.results, function(i, val) {
-		    me.hiddenTweets.add(new Tweet({
-		    	  'id': val.id,
-		          'createdAt': val.created_at,
-		          'profileImageUrl': val.profile_image_url,
-		          'user': val.from_user,
-		          'text': val.text   
-		    })); 
-		     
-			// Count new items
-			if(val.id > me.get('lastRead')) {
-				newItems++;
-			}
-		});
+
+		if(!this.get('lastRead')) {
+			this.set({ 'lastRead': this.latestTweets.maxId().get('id') });
+		}
+		
+		newItems = this.latestTweets.filter(function(tweet) {
+			return tweet.id > me.get('lastRead');
+		}).length;
 		
 		if(newItems == 0) {
 	       	me.revealLatestTweets(); 
@@ -60,14 +54,14 @@ var TwitterSearch = Backbone.Model.extend({
 		});
 	},
 	revealLatestTweets: function() {
-		this.tweets.reset();
+		this.displayedTweets.reset();
 	   	var me = this,
 	   		maxId = 0;
-	   	$.each(this.hiddenTweets.models, function(i, val) {
+	   	$.each(this.latestTweets.models, function(i, val) {
 	   		if(val.get('id') > maxId) {
 	   			maxId = val.get('id');
 	   		}
-	    	me.tweets.add(val);
+	    	me.displayedTweets.add(val);
 	   	});   
 	   	me.set({ 'lastRead': maxId });
 	},
